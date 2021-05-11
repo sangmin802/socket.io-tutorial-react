@@ -1,0 +1,29 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+
+node_modules
+/.pnp
+.pnp.js
+proxy.js
+API.ts
+models/
+backup.js
+
+# testing
+/coverage
+
+# production
+/build 
+# build 이그노어 지우면 public path 된다는 말도 있음
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
