@@ -22,7 +22,7 @@ const User = ({
   const onClickHandler = useCallback(() => {
     const newUserList = userList.map(list => {
       if (list.userID === user.userID) {
-        list.hasNewMessages = false;
+        list.hasNewMessages = 0;
       }
       return list;
     });
@@ -45,8 +45,10 @@ const User = ({
           <StatusIcon connected={user.connected} />
           {status}
         </div>
-        {user.hasNewMessages && <div className="new-messages">!</div>}
       </div>
+      {user.hasNewMessages !== 0 && (
+        <div className="new-messages">{user.hasNewMessages}</div>
+      )}
     </SUser>
   );
 };

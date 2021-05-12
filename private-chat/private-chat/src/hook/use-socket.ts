@@ -85,7 +85,7 @@ export function useSocket({
         if (newUserList[i].userID === from) {
           newUserList[i].messages.push({ content, fromSelf: false });
           if (newUserList[i].userID !== selectedID)
-            newUserList[i].hasNewMessages = true;
+            newUserList[i].hasNewMessages++;
           setUserList(newUserList);
           break;
         }
