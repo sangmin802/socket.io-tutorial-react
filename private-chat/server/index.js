@@ -23,6 +23,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", socket => {
+  // 테스트를 위해 데모 유저 추가
   const users = [
     {
       self: false,
@@ -66,7 +67,7 @@ io.on("connection", socket => {
   // Room 개념
   // 선택한 유저에게 보내진 메시지 송신 후, 해당 유저에게 메시지 전달
   socket.on("private message", ({ content, to }) => {
-    // 데모 유저의 메시징 전달 테스트
+    // 메시지 전달 테스트를 위한 데모유저의 응답
     // 고유 id에 보낼때랑, 생성된 채널(room)에 보낼때랑 다른듯함
     // io.to : 귓속말 개념
     // socket.to : 카톡 단체 채팅방 개념
@@ -81,8 +82,5 @@ io.on("connection", socket => {
       content: "demo user 3 send message to yourSelf",
       from: "demo user 3",
     });
-
-    // socket.to를 통해 특정 Room에만 이벤트를 부여할 수 있다.
-    // socket.to(to).emit("private message", { content, from: socket.id });
   });
 });
