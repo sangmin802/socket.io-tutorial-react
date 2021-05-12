@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react";
 
 export function useSelectUser() {
-  const [selectedUser, setState] = useState(null);
+  const [selectedID, setState] = useState<null | string>(null);
 
-  const setSelectedUser = useCallback(
-    user => {
-      setState(user);
+  const setSelectedID = useCallback(
+    (userID: string) => {
+      setState(userID);
     },
     [setState]
   );
 
-  return { selectedUser, setSelectedUser };
+  return { selectedID, setSelectedID };
 }

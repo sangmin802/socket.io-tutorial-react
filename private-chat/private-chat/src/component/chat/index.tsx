@@ -1,16 +1,24 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
-import User from "component/user/index";
 import { IUser } from "util/types";
-import { useSelectUser } from "hook/use-select-user";
+import User from "component/user/index";
+import MessagePanel from "component/message-panel/index";
 
 interface Props {
   userList: IUser[];
+  setUserList(T: IUser[]): void;
+  selectedUser: null | IUser;
+  setSelectedID(T: string): void;
+  onMessage(T: string): void;
 }
 
-const Chat = ({ userList }: Props) => {
-  const { selectedUser, setSelectedUser } = useSelectUser();
-
+const Chat = ({
+  userList,
+  selectedUser,
+  setSelectedID,
+  onMessage,
+  setUserList,
+}: Props) => {
   return (
     <main>
       <SLeftPanel>
@@ -18,12 +26,16 @@ const Chat = ({ userList }: Props) => {
           <User
             key={user.userID}
             user={user}
-            selected={selectedUser === user}
-            setSelectedUser={setSelectedUser}
+            userList={userList}
+            setUserList={setUserList}
+            selected={selectedUser?.userID === user.userID}
+            setSelectedID={setSelectedID}
           />
         ))}
       </SLeftPanel>
-      {/* <SRightPanel></SRightPanel> */}
+      {selectedUser && (
+        <MessagePanel user={selectedUser} onMessage={onMessage} />
+      )}
     </main>
   );
 };
@@ -37,9 +49,6 @@ const SLeftPanel = styled.div`
   overflow-x: hidden;
   background-color: #3f0e40;
   color: white;
-`;
-const SRightPanel = styled.div`
-  margin-left: 260px;
 `;
 
 export default Chat;

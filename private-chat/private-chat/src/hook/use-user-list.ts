@@ -2,13 +2,11 @@ import { useCallback, useState } from "react";
 import { IUser } from "util/types";
 
 export function useUserList() {
-  const arr: IUser[] = [];
-  const [userList, setState] = useState(arr);
+  const root: IUser[] = [];
+  const [userList, setState] = useState(root);
 
   const setUserList = useCallback(
-    (newUser: IUser) => {
-      const newUserList = [...userList];
-      newUserList.push(newUser);
+    (newUserList: IUser[]) => {
       const sortedUsers = newUserList.sort((a: IUser, b: IUser) => {
         if (a.self) return -1;
         if (b.self) return 1;
@@ -17,7 +15,7 @@ export function useUserList() {
       });
       setState(sortedUsers);
     },
-    [setState, userList]
+    [setState]
   );
 
   return { userList, setUserList };

@@ -6,15 +6,31 @@ import { IUser } from "util/types";
 interface Props {
   user: IUser;
   selected: boolean;
-  setSelectedUser(T: IUser): void;
+  setSelectedID(T: string): void;
+  userList: IUser[];
+  setUserList(T: IUser[]): void;
 }
 
-const User = ({ user, selected, setSelectedUser }: Props) => {
+const User = ({
+  user,
+  selected,
+  setSelectedID,
+  userList,
+  setUserList,
+}: Props) => {
+  // 다른 유저 클릭
   const onClickHandler = useCallback(() => {
-    user.hasNewMessages = false;
-    setSelectedUser(user);
-  }, [setSelectedUser, user]);
+    const newUserList = userList.map(list => {
+      if (list.userID === user.userID) {
+        list.hasNewMessages = false;
+      }
+      return list;
+    });
+    setUserList(newUserList);
+    setSelectedID(user.userID);
+  }, [setSelectedID, user, userList, setUserList]);
 
+  // 온라인 오프라인 표시
   const status = useMemo(() => {
     return user.connected ? "online" : "offline";
   }, [user.connected]);
