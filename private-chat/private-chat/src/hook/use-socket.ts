@@ -5,7 +5,7 @@ import { IUser } from "util/types";
 interface IUseSocket {
   setName(T: null | string): void;
   userList: IUser[];
-  setUserList(T: IUser[]): void;
+  setUserList(T: IUser[] | IUser | null): void;
   selectedID: null | string;
 }
 
@@ -86,7 +86,7 @@ export function useSocket({
           newUserList[i].messages.push({ content, fromSelf: false });
           if (newUserList[i].userID !== selectedID)
             newUserList[i].hasNewMessages++;
-          setUserList(newUserList);
+          setUserList(newUserList[i]);
           break;
         }
       }
@@ -105,13 +105,13 @@ export function useSocket({
           content,
           to: selectedID,
         });
-        console.log(selectedID);
-        const newUserList = userList.map(user => {
-          if (user.userID === selectedID)
-            user.messages.push({ content, fromSelf: true });
-
-          return user;
-        });
+        const newUserList =
+          userList.find(user => {
+            if (user.userID === selectedID) {
+              user.messages.push({ content, fromSelf: true });
+              return user;
+            }
+          }) ?? null;
         setUserList(newUserList);
       }
     },

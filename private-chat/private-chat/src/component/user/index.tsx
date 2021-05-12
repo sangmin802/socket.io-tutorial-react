@@ -7,28 +7,15 @@ interface Props {
   user: IUser;
   selected: boolean;
   setSelectedID(T: string): void;
-  userList: IUser[];
-  setUserList(T: IUser[]): void;
+  setUserList(T: IUser): void;
 }
 
-const User = ({
-  user,
-  selected,
-  setSelectedID,
-  userList,
-  setUserList,
-}: Props) => {
+const User = ({ user, selected, setSelectedID, setUserList }: Props) => {
   // 다른 유저 클릭
   const onClickHandler = useCallback(() => {
-    const newUserList = userList.map(list => {
-      if (list.userID === user.userID) {
-        list.hasNewMessages = 0;
-      }
-      return list;
-    });
-    setUserList(newUserList);
+    setUserList({ ...user, hasNewMessages: 0 });
     setSelectedID(user.userID);
-  }, [setSelectedID, user, userList, setUserList]);
+  }, [setSelectedID, user, setUserList]);
 
   // 온라인 오프라인 표시
   const status = useMemo(() => {
