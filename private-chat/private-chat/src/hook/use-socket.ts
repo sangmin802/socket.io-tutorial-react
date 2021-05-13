@@ -3,9 +3,10 @@ import { socket } from "socket/index";
 import { IUser } from "util/types";
 
 interface IUseSocket {
-  setName(T: null | string): void;
+  setName(T: boolean): void;
   userList: IUser[];
-  setUserList(T: IUser[] | IUser | null): void;
+  setUserList(T: IUser[]): void;
+  pushUserList(T: IUser | null): void;
   selectedID: null | string;
 }
 
@@ -13,18 +14,24 @@ export function useSocket({
   setName,
   userList,
   setUserList,
+  pushUserList,
   selectedID,
 }: IUseSocket) {
   // setName useEffect
   useEffect(() => {
     // socket 연결 실패로인한 오류 수신
     socket.on("connect_error", err => {
-      if (err.message === "invalid userName") setName(null);
+      if (err.message === "invalid userName") setName(false);
     });
 
-    return () => {
-      socket.off("connect_error");
-    };
+    // 만약, localStorage에 저장된 sessionID가 있다면, 그것을 통해 바로 socket 접속
+    const sessionID = localStorage.getItem("sessionID");
+    if (sessionID) {
+      console.log(sessionID);
+      setName(true);
+      socket.auth = { sessionID };
+      socket.connect();
+    }
   }, [setName]);
 
   // userList, setUserList useEffect
@@ -39,7 +46,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // 새로운 유저 접속 시 수신
+    // 새로운 socket 참여자
     socket.on("user connected", user => {
       // initReactiveProperties(user); 용도 모르겠음
       const newUserList = [...userList];
@@ -47,7 +54,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // socket의 접속 이벤트 감지, 접속중인 유저 구분
+    // 내 친구의 socket 접속 감지
     socket.on("connect", () => {
       const newUserList = userList.map(user => {
         if (user.self) user.connected = true;
@@ -57,7 +64,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // socket의 비접속 이벤트 감지, 비접속중인 유저 구분
+    // 내 친구의 socket 비접속 감지
     socket.on("disconnect", () => {
       const newUserList = userList.map(user => {
         if (user.self) user.connected = false;
@@ -77,25 +84,39 @@ export function useSocket({
 
   // userList, setUserList, selectedID useEffect
   useEffect(() => {
-    // 나에게로 온 메시지 수신
-    socket.on("private message", ({ content, from }) => {
-      const newUserList = [...userList];
-      // 리스트중에 나에게 메시지를 보낸사람이 존재하고, 아직 선택하지 않았다면
-      for (let i = 0; i < newUserList.length; i++) {
-        if (newUserList[i].userID === from) {
-          newUserList[i].messages.push({ content, fromSelf: false });
-          if (newUserList[i].userID !== selectedID)
-            newUserList[i].hasNewMessages++;
-          setUserList(newUserList[i]);
-          break;
-        }
-      }
+    // 메시지 발신 시, 발신자 수신자 모두 받는 메시지
+    socket.on("private message", ({ content, from, to }) => {
+      // 내가 보낸 메시지인지 아닌지
+      const fromSelf = socket.userID === from;
+      // 내가 보낸 메시지라면 수신자 to의 인스턴스
+      // 상대방이 보낸 메시지라면 발신자 from의 인스턴스
+      const fromUser = userList.find(
+        user => user.userID === (fromSelf ? to : from)
+      );
+      if (!fromUser) return;
+      if (fromUser.userID !== selectedID) fromUser.hasNewMessages++;
+      fromUser.messages.push({ content, fromSelf });
+      pushUserList(fromUser);
     });
 
     return () => {
       socket.off("private message");
     };
-  }, [userList, setUserList, selectedID]);
+  }, [userList, pushUserList, selectedID]);
+
+  // 한번실행
+  useEffect(() => {
+    // socket에서 생성된 sessionID, userID localStorage에 저장
+    socket.on("session", ({ sessionID, userID }) => {
+      socket.auth = { sessionID };
+      socket.userID = userID;
+      localStorage.setItem("sessionID", sessionID);
+    });
+
+    return () => {
+      socket.off("connect_error");
+    };
+  }, []);
 
   // 선택한 유저에게 메시지 전달
   const onMessage = useCallback(
@@ -105,35 +126,20 @@ export function useSocket({
           content,
           to: selectedID,
         });
-        const newUserList =
-          userList.find(user => {
-            if (user.userID === selectedID) {
-              user.messages.push({ content, fromSelf: true });
-              return user;
-            }
-          }) ?? null;
-        setUserList(newUserList);
       }
     },
-    [selectedID, userList, setUserList]
+    [selectedID, userList]
   );
 
   // socket 연결
   const connectSocket = useCallback(
     userName => {
-      setName(userName);
+      setName(true);
       socket.auth = { userName };
       socket.connect();
     },
     [setName]
   );
-
-  // 앱 종료시, connect_error 이벤트 수신 종료
-  useEffect(() => {
-    return () => {
-      socket.off("connect_error");
-    };
-  }, []);
 
   return { connectSocket, onMessage };
 }
