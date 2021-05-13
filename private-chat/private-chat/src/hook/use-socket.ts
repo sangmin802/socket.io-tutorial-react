@@ -42,7 +42,6 @@ export function useSocket({
         return user;
         // initReactiveProperties(user); 용도 모르겠음
       });
-      console.log(newUserList);
       setUserList(newUserList);
     });
 
@@ -64,7 +63,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // socket 비접속
+    // socket 로그아웃
     socket.on("disconnect", () => {
       const newUserList = userList.map(user => {
         if (user.self) user.connected = false;
