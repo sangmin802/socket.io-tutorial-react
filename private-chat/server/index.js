@@ -63,7 +63,7 @@ io.on("connection", socket => {
   // socket.io에 생성된 socket 인스턴스 유저 리스트
   const users = [];
 
-  // socket에 접속한 클라이언트 저장
+  // 클라이언트의 socket 인스턴스 저장
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
     userName: socket.userName,
@@ -82,7 +82,7 @@ io.on("connection", socket => {
   // 기존 socket방식에서 socket.메소드로 자신에게 다시 보내는것은 불가능한가봄
   socket.join(socket.userID);
 
-  // socket에 접속한 혹은 접속했던 모든 클라이언트 반환
+  // socket에 접속중인 혹은 접속했던 모든 클라이언트 반환
   sessionStore.findAllSessions().forEach(session => {
     users.push(
       userInterface({
