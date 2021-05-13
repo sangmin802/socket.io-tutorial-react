@@ -60,34 +60,6 @@ io.use((socket, next) => {
 
 // 하나의 서버의 io안에 여러개의 socket 인스턴스?
 io.on("connection", socket => {
-  // 테스트를 위해 데모 유저 추가
-  const users = [
-    {
-      self: false,
-      userID: "demo user 1",
-      userName: "demo user 1",
-      hasNewMessages: 0,
-      connected: true,
-      messages: [{ content: "Hello, sangmin!", fromSelf: false }],
-    },
-    {
-      self: false,
-      userID: "demo user 2",
-      userName: "demo user 2",
-      hasNewMessages: 0,
-      connected: false,
-      messages: [],
-    },
-    {
-      self: false,
-      userID: "demo user 3",
-      userName: "demo user 3",
-      hasNewMessages: 0,
-      connected: true,
-      messages: [],
-    },
-  ];
-
   // socket에 접속한 클라이언트 저장
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
@@ -144,18 +116,6 @@ io.on("connection", socket => {
       content,
       from: socket.userID,
       to,
-    });
-    io.to(socket.userID)
-      .to(to)
-      .emit("private message", {
-        content: `You said, ${content} right?`,
-        from: to,
-        to: socket.userID,
-      });
-    io.to("demo user 3").to(socket.userID).emit("private message", {
-      content: "Hi Sangmin! What are you doing!",
-      from: "demo user 3",
-      to: socket.userID,
     });
   });
 
