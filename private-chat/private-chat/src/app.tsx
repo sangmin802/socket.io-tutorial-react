@@ -8,13 +8,14 @@ import Chat from "component/chat/index";
 
 function App() {
   const { name, setName } = useName();
-  const { userList, setUserList } = useUserList();
+  const { userList, setUserList, pushUserList } = useUserList();
   const { selectedID, setSelectedID } = useSelectUser();
   const { connectSocket, onMessage } = useSocket({
     setName,
     userList,
     setUserList,
     selectedID,
+    pushUserList,
   });
 
   const selectedUser = useMemo(
@@ -28,7 +29,7 @@ function App() {
       {userList.length > 0 && (
         <Chat
           userList={userList}
-          setUserList={setUserList}
+          pushUserList={pushUserList}
           selectedUser={selectedUser}
           setSelectedID={setSelectedID}
           onMessage={onMessage}

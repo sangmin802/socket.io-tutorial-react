@@ -6,7 +6,7 @@ import MessagePanel from "component/message-panel/index";
 
 interface Props {
   userList: IUser[];
-  setUserList(T: IUser): void;
+  pushUserList(T: IUser): void;
   selectedUser: null | IUser;
   setSelectedID(T: string): void;
   onMessage(T: string): void;
@@ -17,7 +17,7 @@ const Chat = ({
   selectedUser,
   setSelectedID,
   onMessage,
-  setUserList,
+  pushUserList,
 }: Props) => {
   return (
     <main>
@@ -26,7 +26,7 @@ const Chat = ({
           <User
             key={user.userID}
             user={user}
-            setUserList={setUserList}
+            pushUserList={pushUserList}
             selected={selectedUser?.userID === user.userID}
             setSelectedID={setSelectedID}
           />
