@@ -98,8 +98,17 @@ export function useSocket({
       pushUserList(fromUser);
     });
 
+    // 누군가의 socket 로그아웃
+    socket.on("user disconnected", id => {
+      const disconnectedUser = userList.find(user => user.userID === id);
+      if (!disconnectedUser) return;
+      disconnectedUser.connected = false;
+      pushUserList(disconnectedUser);
+    });
+
     return () => {
       socket.off("private message");
+      socket.off("user disconnected");
     };
   }, [userList, pushUserList, selectedID]);
 
