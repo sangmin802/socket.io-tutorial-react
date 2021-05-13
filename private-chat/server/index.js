@@ -11,7 +11,7 @@ const server = app.listen(port, () => {
   console.log(`Server is connected on ${port}`);
 });
 
-// socket.io 에 express server instance 할당
+// socket.io에 현재 생성된 express 서버 연결
 const io = require("socket.io")(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -20,7 +20,7 @@ const io = require("socket.io")(server, {
 
 // socket으로 접속하는 모든 요청에대한 미들웨어 io.use
 io.use((socket, next) => {
-  // sessionID를 보내왔다면 sessionStore에 기억된 값으로 로그인
+  // localStorage에 저장되어있는 userID인 sessionID를 보내왔다면 sessionStore에 기억된 값으로 로그인
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
@@ -40,6 +40,7 @@ io.use((socket, next) => {
   next();
 });
 
+// 하나의 서버의 io안에 여러개의 socket 인스턴스?
 io.on("connection", socket => {
   // 테스트를 위해 데모 유저 추가
   const users = [
