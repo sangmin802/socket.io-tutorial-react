@@ -38,7 +38,7 @@ export function useSocket({
     // 현재 socket에 접속중인 유저목록 수신
     socket.on("users", users => {
       const newUserList = users.map((user: IUser) => {
-        user.self = user.userID === socket.id;
+        user.self = user.userID === socket.userID;
         return user;
         // initReactiveProperties(user); 용도 모르겠음
       });
