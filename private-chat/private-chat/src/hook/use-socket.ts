@@ -27,7 +27,6 @@ export function useSocket({
     // 만약, localStorage에 저장된 sessionID가 있다면, 그것을 통해 바로 socket 접속
     const sessionID = localStorage.getItem("sessionID");
     if (sessionID) {
-      console.log(sessionID);
       setName(true);
       socket.auth = { sessionID };
       socket.connect();
@@ -54,7 +53,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // 내 친구의 socket 접속 감지
+    // socket 접속
     socket.on("connect", () => {
       const newUserList = userList.map(user => {
         if (user.self) user.connected = true;
@@ -64,7 +63,7 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // 내 친구의 socket 비접속 감지
+    // socket 비접속
     socket.on("disconnect", () => {
       const newUserList = userList.map(user => {
         if (user.self) user.connected = false;
