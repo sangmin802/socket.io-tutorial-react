@@ -6,6 +6,24 @@ const app = express();
 const port = 3001;
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
+const userInterface = ({
+  self = false,
+  userID,
+  userName,
+  hasNewMessages = 0,
+  connected = true,
+  messages = [],
+}) => {
+  return {
+    self,
+    userID,
+    userName,
+    hasNewMessages,
+    connected,
+    messages,
+  };
+};
+
 // express server instance 생성
 const server = app.listen(port, () => {
   console.log(`Server is connected on ${port}`);
