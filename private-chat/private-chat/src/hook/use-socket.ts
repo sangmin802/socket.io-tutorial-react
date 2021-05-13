@@ -76,7 +76,6 @@ export function useSocket({
     return () => {
       socket.off("users");
       socket.off("user connected");
-      socket.off("private message");
       socket.off("connect");
       socket.off("disconnect");
     };
