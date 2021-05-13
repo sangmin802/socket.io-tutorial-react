@@ -128,7 +128,7 @@ export function useSocket({
         });
       }
     },
-    [selectedID, userList]
+    [selectedID]
   );
 
   // socket 연결
