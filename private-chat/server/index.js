@@ -109,22 +109,26 @@ io.on("connection", socket => {
 
   // socket에 접속한 혹은 접속했던 모든 클라이언트 반환
   sessionStore.findAllSessions().forEach(session => {
-    users.push({
-      userID: session.userID,
-      userName: session.userName,
-      connected: session.connected,
-    });
+    users.push(
+      userInterface({
+        userID: session.userID,
+        userName: session.userName,
+        connected: session.connected,
+      })
+    );
   });
 
   // socket의 모든 클라이언트 전달
   socket.emit("users", users);
 
   // 다른 유저 접속
-  socket.broadcast.emit("user connected", {
-    userID: socket.userID,
-    userName: socket.userName,
-    connected: true,
-  });
+  socket.broadcast.emit(
+    "user connected",
+    userInterface({
+      userID: socket.userID,
+      userName: socket.userName,
+    })
+  );
 
   // Room 개념
   // 선택한 유저에게 보내진 메시지 송신 후, 해당 유저에게 메시지 전달
