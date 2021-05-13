@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
 
 export function useName() {
-  const [name, setState] = useState(null);
+  const [name, setState] = useState(false);
   const setName = useCallback(
-    name => {
-      setState(name);
+    boolean => {
+      setState(boolean);
     },
     [setState]
   );
