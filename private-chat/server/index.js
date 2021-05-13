@@ -131,4 +131,19 @@ io.on("connection", socket => {
       to: socket.userID,
     });
   });
+
+  socket.on("disconnect", async () => {
+    // 지정된 방(socket.userID)에 있는 모든 다른 유저(socket 인스턴스) 반환
+    const matchingSockets = await io.in(socket.userID).allSockets();
+    const isDisconnected = matchingSockets.size === 0;
+    // socket을 종료하며 sessionStore에 저장
+    if (isDisconnected) {
+      socket.broadcast.emit("user disconnected", socket.userID);
+      sessionStore.saveSession(socket.sessionID, {
+        userID: socket.userID,
+        userName: socket.userName,
+        connected: false,
+      });
+    }
+  });
 });
