@@ -25,7 +25,7 @@ export function useSocket({
     });
 
     // 만약, localStorage에 저장된 sessionID가 있다면, 그것을 통해 바로 socket 접속
-    const sessionID = localStorage.getItem("sessionID");
+    const sessionID = sessionStorage.getItem("sessionID");
     if (sessionID) {
       setName(true);
       socket.auth = { sessionID };
@@ -42,6 +42,7 @@ export function useSocket({
         return user;
         // initReactiveProperties(user); 용도 모르겠음
       });
+      console.log(newUserList);
       setUserList(newUserList);
     });
 
@@ -108,7 +109,7 @@ export function useSocket({
     socket.on("session", ({ sessionID, userID }) => {
       socket.auth = { sessionID };
       socket.userID = userID;
-      localStorage.setItem("sessionID", sessionID);
+      sessionStorage.setItem("sessionID", sessionID);
     });
 
     return () => {
