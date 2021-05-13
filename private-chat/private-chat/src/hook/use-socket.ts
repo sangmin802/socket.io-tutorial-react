@@ -45,12 +45,27 @@ export function useSocket({
       setUserList(newUserList);
     });
 
-    // 새로운 socket 참여자
+    // 누군가의 socket 로그인
     socket.on("user connected", user => {
       // initReactiveProperties(user); 용도 모르겠음
+      const reConnectUser = userList.find(
+        oldUser => oldUser.userID === user.userID
+      );
+      if (reConnectUser) {
+        reConnectUser.connected = true;
+        return pushUserList(reConnectUser);
+      }
       const newUserList = [...userList];
       newUserList.push(user);
       setUserList(newUserList);
+    });
+
+    // 누군가의 socket 로그아웃
+    socket.on("user disconnected", id => {
+      const disconnectedUser = userList.find(user => user.userID === id);
+      if (!disconnectedUser) return;
+      disconnectedUser.connected = false;
+      pushUserList(disconnectedUser);
     });
 
     // socket 접속
@@ -75,10 +90,11 @@ export function useSocket({
     return () => {
       socket.off("users");
       socket.off("user connected");
+      socket.off("user disconnected");
       socket.off("connect");
       socket.off("disconnect");
     };
-  }, [userList, setUserList]);
+  }, [userList, setUserList, pushUserList]);
 
   // userList, setUserList, selectedID useEffect
   useEffect(() => {
@@ -97,17 +113,8 @@ export function useSocket({
       pushUserList(fromUser);
     });
 
-    // 누군가의 socket 로그아웃
-    socket.on("user disconnected", id => {
-      const disconnectedUser = userList.find(user => user.userID === id);
-      if (!disconnectedUser) return;
-      disconnectedUser.connected = false;
-      pushUserList(disconnectedUser);
-    });
-
     return () => {
       socket.off("private message");
-      socket.off("user disconnected");
     };
   }, [userList, pushUserList, selectedID]);
 
