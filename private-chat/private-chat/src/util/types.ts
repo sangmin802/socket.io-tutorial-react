@@ -4,5 +4,10 @@ export interface IUser {
   userName: string;
   hasNewMessages: number;
   connected: boolean;
-  messages: { content: string; fromSelf: boolean }[];
+  messages: {
+    content: string;
+    fromSelf: boolean;
+    from?: string;
+    to?: string;
+  }[];
 }
