@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 const { InMemorySessionStore } = require("./sessionStore");
 const sessionStore = new InMemorySessionStore();
+const { InMemoryMessageStore } = require("./messageStore");
+const messageStore = new InMemoryMessageStore();
 const express = require("express");
 const app = express();
 const port = 3001;
@@ -60,9 +62,6 @@ io.use((socket, next) => {
 
 // 하나의 서버의 io안에 여러개의 socket 인스턴스?
 io.on("connection", socket => {
-  // socket.io에 생성된 socket 인스턴스 유저 리스트
-  const users = [];
-
   // 클라이언트의 socket 인스턴스 저장
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
