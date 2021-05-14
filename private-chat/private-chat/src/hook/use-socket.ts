@@ -39,6 +39,9 @@ export function useSocket({
     socket.on("users", users => {
       const newUserList = users.map((user: IUser) => {
         user.self = user.userID === socket.userID;
+        user.messages.forEach(message => {
+          message.fromSelf = message.from === socket.userID;
+        });
         return user;
         // initReactiveProperties(user); 용도 모르겠음
       });
