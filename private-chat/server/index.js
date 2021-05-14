@@ -99,6 +99,7 @@ io.on("connection", socket => {
         userID: session.userID,
         userName: session.userName,
         connected: session.connected,
+        messages: messagesPerUser.get(session.userID) || [],
       })
     );
   });
