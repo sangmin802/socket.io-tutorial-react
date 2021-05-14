@@ -77,10 +77,20 @@ io.on("connection", socket => {
     userID: socket.userID,
   });
 
-  // 생성되는 socket간 메시지 전달이 아닌, 접속한 userID를 기반으로
-  // 상호 메시지 전달을 위해, userID Room 생성
-  // 기존 socket방식에서 socket.메소드로 자신에게 다시 보내는것은 불가능한가봄
-  socket.join(socket.userID);
+  // socket.io에 생성된 socket 인스턴스 유저 리스트
+  const users = [];
+
+  // 상대방의 userID로 된 room에 대한 메시지를 저장
+  const messagesPerUser = new Map();
+  messageStore.findMessagesForUser(socket.userID).forEach(message => {
+    const { from, to } = message;
+    const otherUser = socket.userID === from ? to : from;
+    if (messagesPerUser.has(otherUser)) {
+      messagesPerUser.get(otherUser).push(message);
+    } else {
+      messagesPerUser.set(otherUser, [message]);
+    }
+  });
 
   // socket에 접속중인 혹은 접속했던 모든 클라이언트 반환
   sessionStore.findAllSessions().forEach(session => {
