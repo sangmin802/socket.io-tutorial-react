@@ -35,6 +35,10 @@ export function useSocket({
 
   // userList, setUserList useEffect
   useEffect(() => {
+    socket.on("msg", msg => {
+      console.log(msg);
+    });
+
     // 현재 socket에 접속중인 유저목록 수신
     socket.on("users", users => {
       const newUserList = users.map((user: IUser) => {

@@ -38,6 +38,15 @@ const io = require("socket.io")(server, {
   },
 });
 
+// 전체채팅을 위한 name-space서버 별도로 생성
+const nsp = io.of("/nsp");
+nsp.on("connection", socket => {
+  // .of(/nsp) 빼니깐 안됨 아마 기본인 '/'로 보내져서 그런듯
+  io.of("/nsp").emit("msg", {
+    msg: "안녕",
+  });
+});
+
 // socket으로 접속하는 모든 요청에대한 미들웨어 io.use
 io.use((socket, next) => {
   // localStorage에 저장되어있는 userID인 sessionID를 보내왔다면 sessionStore에 기억된 값으로 로그인
